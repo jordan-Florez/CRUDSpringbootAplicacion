@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Usuarios</title>
+</head>
+<body>
+    <h1>Lista de Usuarios</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="usuariosTableBody">
+            <!-- Aquí se llenará la tabla con los usuarios -->
+        </tbody>
+    </table>
+
+    <h2>Crear Nuevo Usuario</h2>
+    <form action="/api/usuarios" method="post" id="crearUsuarioForm">
+        <label for="nombre">Nombre de Usuario:</label><br>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+
+        <label for="password">Contraseña:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Guardar Usuario">
+    </form>
+
+    <script>
+        // Cargar los usuarios al inicio
+        fetch('/api/usuarios')
+            .then(response => response.json())
+            .then(usuarios => {
+                const tableBody = document.getElementById('usuariosTableBody');
+                usuarios.forEach(usuario => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${usuario.id}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>
+                            <button onclick="actualizarUsuario(${usuario.id})">Actualizar</button>
+                            <button onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+
+        // Función para actualizar usuario
+        function actualizarUsuario(id) {
+            const nombre = prompt("Ingrese nuevo nombre de usuario:");
+            const password = prompt("Ingrese nueva contraseña:");
+            if (nombre && password) {
+                fetch(`/api/usuarios/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, nombre, password }),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Usuario actualizado con éxito.");
+                        location.reload(); // Recargar la página para ver los cambios
+                    } else {
+                        alert("Error al actualizar el usuario.");
+                    }
+                });
+            }
+        }
+
+        // Función para eliminar usuario
+        function eliminarUsuario(id) {
+            if (confirm("¿Está seguro de que desea eliminar este usuario?")) {
+                fetch(`/api/usuarios/${id}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Usuario eliminado con éxito.");
+                        location.reload(); // Recargar la página para ver los cambios
+                    } else {
+                        alert("Error al eliminar el usuario.");
+                    }
+                });
+            }
+        }
+
+        // Función para manejar el envío del formulario de creación de usuario
+        document.getElementById('crearUsuarioForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Evita el envío del formulario para manejarlo con JavaScript
+
+            const nombre = document.getElementById('nombre').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/api/usuarios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre, password }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Usuario creado con éxito.");
+                    location.reload(); // Recargar la página para ver los cambios
+                } else {
+                    alert("Error al crear el usuario.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
