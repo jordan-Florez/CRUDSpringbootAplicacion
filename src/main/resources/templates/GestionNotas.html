@@ -37,6 +37,8 @@
     </form>
 
     <script>
+
+        
         fetch('/api/notas')
             .then(response => response.json())
             .then(notas => {
@@ -57,7 +59,7 @@
                 });
             });
 
-
+        //Función para actualizar Notas
         function actualizarNota(id) {
             const titulo = prompt("Ingrese nuevo título:");
             const contenido = prompt("Ingrese nuevo contenido:");
@@ -81,7 +83,7 @@
             }
         }
 
-       
+        //Función para eliminar notas
         function eliminarNota(id) {
             if (confirm("¿Está seguro de que desea eliminar esta nota?")) {
                 fetch(`/api/notas/${id}`, {
