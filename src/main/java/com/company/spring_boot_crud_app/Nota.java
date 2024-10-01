@@ -44,7 +44,7 @@ public class Nota {
     // @JoinColumn(name = "carpeta_id")
     // private Carpeta carpeta;
 
-    private Long carpeta_id;
+    private Long carpeta_id; //Id de la carpeta
 
     /**
      * Constructor vacío requerido por JPA.
